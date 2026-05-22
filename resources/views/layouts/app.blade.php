@@ -31,8 +31,10 @@
             class="rounded-sm bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-700">Register</a>
         @else
           <a href="{{ route('dashboard') }}" class="text-zinc-600 hover:text-zinc-950">Dashboard</a>
+          <a href="{{ route('articles.index') }}" class="text-zinc-600 hover:text-zinc-950">Articles</a>
           @if (auth()->user()->isAdmin())
             <a href="{{ route('admin.dashboard') }}" class="text-zinc-600 hover:text-zinc-950">Admin Dashboard</a>
+            <a href="{{ route('admin.articles.reviews.index') }}" class="text-zinc-600 hover:text-zinc-950">Reviews</a>
           @endif
           <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
             <button type="button"
