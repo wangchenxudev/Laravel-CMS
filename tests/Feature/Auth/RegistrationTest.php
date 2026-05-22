@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -22,7 +23,7 @@ test('new users can register as regular users', function () {
     $user = User::query()->where('email', 'test@example.com')->first();
 
     expect($user)->not->toBeNull()
-        ->and($user->role)->toBe('user');
+        ->and($user->role)->toBe(UserRole::User);
 
     $this->assertAuthenticatedAs($user);
     $response->assertRedirect(route('dashboard', absolute: false));

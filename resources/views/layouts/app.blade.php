@@ -17,36 +17,36 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
-  <header class="border-b border-slate-200 bg-white">
+<body class="min-h-screen bg-zinc-50 font-sans text-zinc-900 antialiased">
+  <header class="border-b border-zinc-200 bg-white">
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-      <a href="{{ route('home') }}" class="text-sm font-semibold text-slate-950">
+      <a href="{{ route('home') }}" class="text-sm font-semibold tracking-tight text-zinc-950">
         CMS
       </a>
 
       <div class="flex items-center gap-4 text-sm">
         @guest
-          <a href="{{ route('login') }}" class="text-slate-600 hover:text-slate-950">Login</a>
+          <a href="{{ route('login') }}" class="text-zinc-600 hover:text-zinc-950">Login</a>
           <a href="{{ route('register') }}"
-            class="rounded-md bg-slate-950 px-3 py-2 font-medium text-white hover:bg-slate-800">Register</a>
+            class="rounded-sm bg-blue-600 px-3 py-2 font-medium text-white hover:bg-blue-700">Register</a>
         @else
-          <a href="{{ route('dashboard') }}" class="text-slate-600 hover:text-slate-950">Dashboard</a>
+          <a href="{{ route('dashboard') }}" class="text-zinc-600 hover:text-zinc-950">Dashboard</a>
+          @if (auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="text-zinc-600 hover:text-zinc-950">Admin Dashboard</a>
+          @endif
           <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
             <button type="button"
-              class="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
+              class="flex items-center gap-2 rounded-sm border border-zinc-300 px-3 py-2 font-medium text-zinc-700 hover:bg-zinc-100"
               @click="open = ! open" @click.outside="open = false">
               <span>{{ auth()->user()->name }}</span>
-              <span class="text-xs text-slate-400">v</span>
+              <span class="text-xs text-zinc-400">v</span>
             </button>
 
             <div x-cloak x-show="open" x-transition
-              class="absolute right-0 z-20 mt-2 w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
-              <a href="{{ route('settings.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
-                Settings
-              </a>
+              class="absolute right-0 z-20 mt-2 w-44 rounded-sm border border-zinc-200 bg-white py-1 shadow-lg">
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
+                <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50">
                   Logout
                 </button>
               </form>
@@ -59,7 +59,7 @@
 
   @if (session('status'))
     <div class="mx-auto mt-6 max-w-6xl px-6">
-      <div class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+      <div class="rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
         {{ session('status') }}
       </div>
     </div>

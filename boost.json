@@ -1,6 +1,10 @@
 {
     "agents": [
-        "codex"
+        "codex",
+        "cursor",
+        "claude_code",
+        "copilot",
+        "opencode"
     ],
     "cloud": false,
     "guidelines": true

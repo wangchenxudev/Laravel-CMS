@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,15 +21,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'admin01',
             'password' => 'password',
-            'role' => 'admin',
-        ]);
-
-        User::query()->updateOrCreate([
-            'email' => '000001@root.com',
-        ], [
-            'name' => 'root01',
-            'password' => 'password',
-            'role' => 'root',
+            'role' => UserRole::Admin,
         ]);
     }
 }
