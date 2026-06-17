@@ -26,5 +26,5 @@ test('new users can register as regular users', function () {
         ->and($user->role)->toBe(UserRole::User);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });

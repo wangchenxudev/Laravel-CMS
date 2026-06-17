@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\ArticleStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewRejectRequest;
+use App\Http\Requests\ReviewTakeDownRequest;
 use App\Models\Article;
 use App\Services\ArticleWorkflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AdminArticleReviewController extends Controller
@@ -16,8 +20,8 @@ class AdminArticleReviewController extends Controller
     public function index(): View
     {
         $articles = Article::query()
-            ->with('author', 'currentStatus')
-            ->whereHas('currentStatus', fn ($query) => $query->where('status', ArticleStatus::PendingReview))
+            ->with('author')
+            ->where('status', ArticleStatus::PendingReview)
             ->latest()
             ->paginate(10);
 
@@ -28,7 +32,9 @@ class AdminArticleReviewController extends Controller
 
     public function show(Article $article): View
     {
-        $article->loadMissing('author', 'currentStatus', 'reviewActions.admin');
+        Gate::authorize('view', $article);
+
+        $article->loadMissing('author', 'reviewActions.admin');
 
         return view('admin.articles.show', [
             'article' => $article,
@@ -37,6 +43,8 @@ class AdminArticleReviewController extends Controller
 
     public function approve(Request $request, Article $article): RedirectResponse
     {
+        Gate::authorize('approve', $article);
+
         $this->workflow->approve($article, $request->user());
 
         return redirect()
@@ -44,11 +52,9 @@ class AdminArticleReviewController extends Controller
             ->with('status', 'Article approved and published.');
     }
 
-    public function reject(Request $request, Article $article): RedirectResponse
+    public function reject(ReviewRejectRequest $request, Article $article): RedirectResponse
     {
-        $validated = $request->validate([
-            'reason' => ['required', 'string', 'max:5000'],
-        ]);
+        $validated = $request->validated();
 
         $this->workflow->reject($article, $request->user(), $validated['reason']);
 
@@ -57,11 +63,9 @@ class AdminArticleReviewController extends Controller
             ->with('status', 'Article rejected.');
     }
 
-    public function takeDown(Request $request, Article $article): RedirectResponse
+    public function takeDown(ReviewTakeDownRequest $request, Article $article): RedirectResponse
     {
-        $validated = $request->validate([
-            'reason' => ['nullable', 'string', 'max:5000'],
-        ]);
+        $validated = $request->validated();
 
         $this->workflow->takeDown($article, $request->user(), $validated['reason'] ?? null);
 

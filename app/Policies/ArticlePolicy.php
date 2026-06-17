@@ -15,7 +15,7 @@ class ArticlePolicy
 
     public function view(User $user, Article $article): bool
     {
-        return $article->author_id === $user->id;
+        return $user->isAdmin() || $this->ownsArticle($user, $article);
     }
 
     public function create(User $user): bool
@@ -26,7 +26,7 @@ class ArticlePolicy
     public function update(User $user, Article $article): bool
     {
         return $this->ownsArticle($user, $article)
-            && in_array($article->currentStatus?->status, [
+            && in_array($article->status, [
                 ArticleStatus::Draft,
                 ArticleStatus::Withdrawn,
                 ArticleStatus::Rejected,
@@ -41,7 +41,22 @@ class ArticlePolicy
     public function withdraw(User $user, Article $article): bool
     {
         return $this->ownsArticle($user, $article)
-            && $article->currentStatus?->status === ArticleStatus::PendingReview;
+            && $article->status === ArticleStatus::PendingReview;
+    }
+
+    public function approve(User $user, Article $article): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function reject(User $user, Article $article): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function takeDown(User $user, Article $article): bool
+    {
+        return $user->isAdmin();
     }
 
     private function ownsArticle(User $user, Article $article): bool

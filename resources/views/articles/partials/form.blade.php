@@ -1,37 +1,29 @@
-@php($article = $article ?? null)
+@php
+  $article = $article ?? null;
+@endphp
 
-<div>
-  <label for="title" class="block text-sm font-medium text-zinc-700">Title</label>
-  <input id="title" name="title" value="{{ old('title', $article?->title) }}" required
-    class="mt-1 block w-full rounded-sm border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-  @error('title')
-    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-  @enderror
-</div>
+<div class="space-y-6">
+  <div>
+    <x-ui.label for="title">Title</x-ui.label>
+    <x-ui.input id="title" name="title" value="{{ old('title', $article?->title) }}" required autofocus placeholder="Enter article title..." :invalid="$errors->has('title')" />
+    @error('title')
+      <p class="mt-2 text-xs text-rose-600 font-medium">{{ $message }}</p>
+    @enderror
+  </div>
 
-<div>
-  <label for="slug" class="block text-sm font-medium text-zinc-700">Slug</label>
-  <input id="slug" name="slug" value="{{ old('slug', $article?->slug) }}"
-    class="mt-1 block w-full rounded-sm border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-  @error('slug')
-    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-  @enderror
-</div>
+  <div>
+    <x-ui.label for="summary">Summary</x-ui.label>
+    <x-ui.input type="textarea" id="summary" name="summary" rows="3" placeholder="Enter a brief description for listing..." :invalid="$errors->has('summary')">{{ old('summary', $article?->summary) }}</x-ui.input>
+    @error('summary')
+      <p class="mt-2 text-xs text-rose-600 font-medium">{{ $message }}</p>
+    @enderror
+  </div>
 
-<div>
-  <label for="summary" class="block text-sm font-medium text-zinc-700">Summary</label>
-  <textarea id="summary" name="summary" rows="3"
-    class="mt-1 block w-full rounded-sm border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">{{ old('summary', $article?->summary) }}</textarea>
-  @error('summary')
-    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-  @enderror
-</div>
-
-<div>
-  <label for="content" class="block text-sm font-medium text-zinc-700">Content</label>
-  <textarea id="content" name="content" rows="12" required
-    class="mt-1 block w-full rounded-sm border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">{{ old('content', $article?->content) }}</textarea>
-  @error('content')
-    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-  @enderror
+  <div>
+    <x-ui.label for="content">Content</x-ui.label>
+    <x-ui.input type="textarea" id="content" name="content" rows="12" required placeholder="Write your article content here..." class="font-mono text-sm" :invalid="$errors->has('content')">{{ old('content', $article?->content) }}</x-ui.input>
+    @error('content')
+      <p class="mt-2 text-xs text-rose-600 font-medium">{{ $message }}</p>
+    @enderror
+  </div>
 </div>

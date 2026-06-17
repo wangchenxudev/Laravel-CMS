@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "Laravel" [ref=e5] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000
+          - img [ref=e6]
+          - generic [ref=e8]: Laravel
+        - navigation [ref=e9]:
+          - link "Home" [ref=e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000
+          - link "Articles" [ref=e11] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/published/articles
+      - generic [ref=e12]:
+        - link "Login" [ref=e13] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+        - link "Register" [ref=e14] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/register
+  - main [ref=e15]:
+    - generic [ref=e17]:
+      - generic [ref=e18]: Enterprise Content Management System
+      - heading "Secure, Efficient, and Professional Publishing & Review Platform" [level=1] [ref=e20]:
+        - text: Secure, Efficient, and Professional
+        - text: Publishing & Review Platform
+      - paragraph [ref=e21]: Provides structured role-based access control, a professional editorial submission workflow, and comprehensive administrator reviews. Help your team build and distribute high-quality content securely.
+      - generic [ref=e22]:
+        - link "Get Started Free" [ref=e23] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/register
+        - link "Login Console" [ref=e24] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+        - link "Browse Articles →" [ref=e25] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/published/articles
+  - contentinfo [ref=e26]:
+    - generic [ref=e27]: © 2026 Laravel. All rights reserved.

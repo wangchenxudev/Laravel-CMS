@@ -1,18 +1,21 @@
 <x-app-layout title="Create Article">
-  <div class="mx-auto max-w-3xl px-6 py-10">
-    <h1 class="text-3xl font-semibold tracking-tight text-zinc-950">Create Article</h1>
+  <div class="max-w-3xl">
+    <x-ui.card title="Create New Article" subtitle="Create a new draft. Submit for review once finished.">
+      <form method="POST" action="{{ route('articles.store') }}" class="space-y-6">
+        @csrf
 
-    <form method="POST" action="{{ route('articles.store') }}" class="mt-6 space-y-5">
-      @csrf
+        @include('articles.partials.form')
 
-      @include('articles.partials.form')
-
-      <div class="flex items-center gap-3">
-        <button type="submit" class="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-          Save Draft
-        </button>
-        <a href="{{ route('articles.index') }}" class="text-sm text-zinc-600 hover:text-zinc-950">Cancel</a>
-      </div>
-    </form>
+        <div class="border-t border-slate-100 pt-5 flex items-center justify-end gap-3">
+          <a href="{{ route('articles.index') }}" 
+            class="inline-flex items-center justify-center rounded border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm active:scale-95 transition-all">
+            Cancel
+          </a>
+          <x-ui.button type="submit" variant="primary">
+            Save Draft
+          </x-ui.button>
+        </div>
+      </form>
+    </x-ui.card>
   </div>
 </x-app-layout>

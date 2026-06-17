@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -16,6 +16,6 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::get('/admin/dashboard', AdminDashboardController::class)->middleware('admin')->name('admin.dashboard');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
 });

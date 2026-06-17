@@ -6,7 +6,6 @@ use App\Enums\UserRole;
 use App\Models\Article;
 use App\Models\ArticleReviewAction;
 use App\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -15,7 +14,6 @@ function articlePayload(array $overrides = []): array
 {
     return array_merge([
         'title' => 'Reviewable Article',
-        'slug' => 'reviewable-article',
         'summary' => 'A short summary.',
         'content' => 'A complete article body.',
     ], $overrides);
@@ -26,12 +24,13 @@ test('authenticated users can create draft articles tied to their user id', func
 
     $response = $this->actingAs($user)->post(route('articles.store'), articlePayload());
 
-    $article = Article::query()->where('slug', 'reviewable-article')->firstOrFail();
+    $article = Article::query()->where('title', 'Reviewable Article')->firstOrFail();
 
     $response->assertRedirect(route('articles.show', $article, absolute: false));
 
     expect($article->author_id)->toBe($user->id)
-        ->and($article->currentStatus->status)->toBe(ArticleStatusEnum::Draft);
+        ->and($article->slug)->toBe('reviewable-article')
+        ->and($article->status)->toBe(ArticleStatusEnum::Draft);
 });
 
 test('guests can not create articles', function () {
@@ -43,12 +42,17 @@ test('guests can not create articles', function () {
 test('users can only view and edit their own articles', function () {
     $owner = User::factory()->create();
     $otherUser = User::factory()->create();
+    $admin = User::factory()->create([
+        'role' => UserRole::Admin,
+    ]);
     $article = Article::factory()->create([
         'author_id' => $owner->id,
     ]);
 
+    $this->actingAs($owner)->get(route('articles.show', $article))->assertOk();
     $this->actingAs($otherUser)->get(route('articles.show', $article))->assertForbidden();
     $this->actingAs($otherUser)->get(route('articles.edit', $article))->assertForbidden();
+    $this->actingAs($admin)->get(route('admin.articles.show', $article))->assertOk();
 });
 
 test('users can submit and withdraw pending articles', function () {
@@ -59,16 +63,16 @@ test('users can submit and withdraw pending articles', function () {
 
     $this->actingAs($user)->post(route('articles.submit', $article))->assertRedirect(route('articles.show', $article, absolute: false));
 
-    expect($article->currentStatus()->first()->status)->toBe(ArticleStatusEnum::PendingReview);
+    expect($article->refresh()->status)->toBe(ArticleStatusEnum::PendingReview);
 
     $this->actingAs($user)->get(route('articles.edit', $article))->assertForbidden();
 
     $this->actingAs($user)->post(route('articles.withdraw', $article))->assertRedirect(route('articles.show', $article, absolute: false));
 
-    $status = $article->currentStatus()->first();
+    $article->refresh();
 
-    expect($status->status)->toBe(ArticleStatusEnum::Withdrawn)
-        ->and($status->withdrawn_at)->not->toBeNull();
+    expect($article->status)->toBe(ArticleStatusEnum::Withdrawn)
+        ->and($article->withdrawn_at)->not->toBeNull();
 
     $this->actingAs($user)->get(route('articles.edit', $article))->assertOk();
 });
@@ -94,15 +98,14 @@ test('admins can approve pending articles and publish them', function () {
 
     $this->actingAs($admin)->post(route('admin.articles.approve', $article))->assertRedirect(route('admin.articles.show', $article, absolute: false));
 
-    $status = $article->currentStatus()->first();
     $action = ArticleReviewAction::query()->where('article_id', $article->id)->firstOrFail();
 
-    expect($status->status)->toBe(ArticleStatusEnum::Published)
-        ->and($status->approved_by)->toBe($admin->id)
-        ->and($status->approved_at)->not->toBeNull()
-        ->and($action->action)->toBe(ArticleReviewActionType::Approve)
-        ->and($action->is_open)->toBeFalse()
-        ->and($action->open_slot)->toBeNull();
+    $article->refresh();
+
+    expect($article->status)->toBe(ArticleStatusEnum::Published)
+        ->and($article->approved_by)->toBe($admin->id)
+        ->and($article->approved_at)->not->toBeNull()
+        ->and($action->action)->toBe(ArticleReviewActionType::Approve);
 });
 
 test('admins can reject articles and authors can revise and resubmit them', function () {
@@ -119,27 +122,27 @@ test('admins can reject articles and authors can revise and resubmit them', func
         'reason' => 'Needs clearer sourcing.',
     ])->assertRedirect(route('admin.articles.show', $article, absolute: false));
 
-    $status = $article->currentStatus()->first();
+    $article->refresh();
 
-    expect($status->status)->toBe(ArticleStatusEnum::Rejected)
-        ->and($status->rejected_by)->toBe($admin->id)
-        ->and($status->rejected_at)->not->toBeNull()
-        ->and($status->reject_reason)->toBe('Needs clearer sourcing.');
+    expect($article->status)->toBe(ArticleStatusEnum::Rejected)
+        ->and($article->rejected_by)->toBe($admin->id)
+        ->and($article->rejected_at)->not->toBeNull()
+        ->and($article->reject_reason)->toBe('Needs clearer sourcing.');
 
     $this->actingAs($user)->patch(route('articles.update', $article), articlePayload([
         'title' => 'Revised Article',
-        'slug' => 'revised-article',
         'content' => 'A clearer article body.',
     ]))->assertRedirect(route('articles.show', $article, absolute: false));
 
     $this->actingAs($user)->post(route('articles.submit', $article))->assertRedirect(route('articles.show', $article, absolute: false));
 
-    $status = $article->currentStatus()->first();
+    $article->refresh();
 
-    expect($status->status)->toBe(ArticleStatusEnum::PendingReview)
-        ->and($status->rejected_by)->toBeNull()
-        ->and($status->rejected_at)->toBeNull()
-        ->and($status->reject_reason)->toBeNull();
+    expect($article->status)->toBe(ArticleStatusEnum::PendingReview)
+        ->and($article->slug)->toBe('revised-article')
+        ->and($article->rejected_by)->toBeNull()
+        ->and($article->rejected_at)->toBeNull()
+        ->and($article->reject_reason)->toBeNull();
 });
 
 test('admins can take down published articles', function () {
@@ -158,10 +161,10 @@ test('admins can take down published articles', function () {
         'reason' => 'Outdated content.',
     ])->assertRedirect(route('admin.articles.show', $article, absolute: false));
 
-    $status = $article->currentStatus()->first();
+    $article->refresh();
 
-    expect($status->status)->toBe(ArticleStatusEnum::TakenDown)
-        ->and($status->taken_down_at)->not->toBeNull();
+    expect($article->status)->toBe(ArticleStatusEnum::TakenDown)
+        ->and($article->taken_down_at)->not->toBeNull();
 });
 
 test('published article pages only show published articles', function () {
@@ -171,43 +174,74 @@ test('published article pages only show published articles', function () {
     ]);
     $article = Article::factory()->create([
         'author_id' => $user->id,
-        'slug' => 'public-article',
     ]);
     $draft = Article::factory()->create([
         'author_id' => $user->id,
-        'slug' => 'draft-article',
     ]);
 
     $this->actingAs($user)->post(route('articles.submit', $article));
     $this->actingAs($admin)->post(route('admin.articles.approve', $article));
 
-    $this->get(route('published.articles.show', $article))->assertOk()->assertSee($article->title);
-    $this->get(route('published.articles.show', $draft))->assertNotFound();
+    $this->get(route('published.articles.show', $article->fresh()->publicRouteParameters()))->assertOk()->assertSee($article->title);
+    $this->get(route('published.articles.show', $draft->publicRouteParameters()))->assertNotFound();
 });
 
-test('only one open review action can exist for an article', function () {
+test('published article pages redirect stale slugs to the canonical url', function () {
+    $user = User::factory()->create();
     $admin = User::factory()->create([
         'role' => UserRole::Admin,
     ]);
-    $article = Article::factory()->create();
-
-    ArticleReviewAction::query()->create([
-        'article_id' => $article->id,
-        'admin_id' => $admin->id,
-        'action' => ArticleReviewActionType::Approve,
-        'from_status' => ArticleStatusEnum::PendingReview,
-        'to_status' => ArticleStatusEnum::Published,
-        'is_open' => true,
-        'open_slot' => 'open',
+    $article = Article::factory()->create([
+        'author_id' => $user->id,
+        'title' => 'Original Article',
+        'slug' => 'original-article',
     ]);
 
-    expect(fn () => ArticleReviewAction::query()->create([
-        'article_id' => $article->id,
-        'admin_id' => $admin->id,
-        'action' => ArticleReviewActionType::Reject,
-        'from_status' => ArticleStatusEnum::PendingReview,
-        'to_status' => ArticleStatusEnum::Rejected,
-        'is_open' => true,
-        'open_slot' => 'open',
-    ]))->toThrow(QueryException::class);
+    $this->actingAs($user)->patch(route('articles.update', $article), articlePayload([
+        'title' => 'Canonical Article',
+    ]))->assertRedirect(route('articles.show', $article, absolute: false));
+
+    $this->actingAs($user)->post(route('articles.submit', $article));
+    $this->actingAs($admin)->post(route('admin.articles.approve', $article));
+
+    $article->refresh();
+
+    $this->get(route('published.articles.show', [
+        'article' => $article,
+        'slug' => 'original-article',
+    ]))
+        ->assertStatus(301)
+        ->assertRedirect(route('published.articles.show', $article->publicRouteParameters(), absolute: false));
+});
+
+test('articles can share a slug because public urls include the id', function () {
+    $first = Article::factory()->create([
+        'title' => 'Shared Title',
+        'slug' => 'shared-title',
+    ]);
+    $second = Article::factory()->create([
+        'title' => 'Shared Title',
+        'slug' => 'shared-title',
+    ]);
+
+    expect($first->slug)->toBe($second->slug)
+        ->and(route('published.articles.show', $first->publicRouteParameters(), absolute: false))
+        ->not->toBe(route('published.articles.show', $second->publicRouteParameters(), absolute: false));
+});
+
+test('published article index orders articles by approval time', function () {
+    $older = Article::factory()->create([
+        'title' => 'Older Published Article',
+        'status' => ArticleStatusEnum::Published,
+        'approved_at' => now()->subDay(),
+    ]);
+    $newer = Article::factory()->create([
+        'title' => 'Newer Published Article',
+        'status' => ArticleStatusEnum::Published,
+        'approved_at' => now(),
+    ]);
+
+    $this->get(route('published.articles.index'))
+        ->assertOk()
+        ->assertSeeInOrder([$newer->title, $older->title]);
 });

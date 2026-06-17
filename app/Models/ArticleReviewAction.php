@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'from_status',
     'to_status',
     'reason',
-    'is_open',
-    'open_slot',
 ])]
 class ArticleReviewAction extends Model
 {
@@ -31,7 +29,6 @@ class ArticleReviewAction extends Model
             'action' => ArticleReviewActionType::class,
             'from_status' => ArticleStatus::class,
             'to_status' => ArticleStatus::class,
-            'is_open' => 'boolean',
         ];
     }
 

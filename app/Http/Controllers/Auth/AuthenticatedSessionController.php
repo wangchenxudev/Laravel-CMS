@@ -31,11 +31,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if ($request->user()->isAdmin()) {
-            return redirect()->to(route('admin.dashboard', absolute: false));
-        }
-
-        return redirect()->to(route('dashboard', absolute: false));
+        return redirect()->to(route('home', absolute: false));
     }
 
     public function destroy(Request $request): RedirectResponse

@@ -36,6 +36,6 @@ class RegisteredUserController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->to(route('dashboard', absolute: false));
+        return redirect()->to(route('home', absolute: false));
     }
 }

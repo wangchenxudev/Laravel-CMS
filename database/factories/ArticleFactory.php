@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\ArticleStatus as ArticleStatusEnum;
 use App\Models\Article;
-use App\Models\ArticleStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -26,19 +25,10 @@ class ArticleFactory extends Factory
         return [
             'author_id' => User::factory(),
             'title' => $title,
-            'slug' => Str::slug($title).'-'.fake()->unique()->bothify('####'),
+            'slug' => Str::slug($title) ?: 'article',
             'summary' => fake()->paragraph(),
             'content' => fake()->paragraphs(3, true),
+            'status' => ArticleStatusEnum::Draft,
         ];
-    }
-
-    public function configure(): static
-    {
-        return $this->afterCreating(function (Article $article): void {
-            ArticleStatus::query()->create([
-                'article_id' => $article->id,
-                'status' => ArticleStatusEnum::Draft,
-            ]);
-        });
     }
 }

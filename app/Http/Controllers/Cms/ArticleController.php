@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Cms;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use App\Services\ArticleWorkflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
@@ -18,7 +20,6 @@ class ArticleController extends Controller
     public function index(Request $request): View
     {
         $articles = Article::query()
-            ->with('currentStatus')
             ->where('author_id', $request->user()->id)
             ->latest()
             ->paginate(10);
@@ -35,21 +36,17 @@ class ArticleController extends Controller
         return view('articles.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreArticleRequest $request): RedirectResponse
     {
-        Gate::authorize('create', Article::class);
-
-        $validated = $this->validateArticle($request);
+        $validated = $request->validated();
 
         $article = Article::query()->create([
             'author_id' => $request->user()->id,
             'title' => $validated['title'],
-            'slug' => $this->uniqueSlug($validated['slug'] ?? $validated['title']),
+            'slug' => $this->slugForTitle($validated['title']),
             'summary' => $validated['summary'] ?? null,
             'content' => $validated['content'],
         ]);
-
-        $this->workflow->createDraftStatus($article);
 
         return redirect()
             ->route('articles.show', $article)
@@ -58,9 +55,9 @@ class ArticleController extends Controller
 
     public function show(Article $article): View
     {
-        $article->loadMissing('currentStatus', 'author');
-
         Gate::authorize('view', $article);
+
+        $article->loadMissing('author');
 
         return view('articles.show', [
             'article' => $article,
@@ -69,8 +66,6 @@ class ArticleController extends Controller
 
     public function edit(Article $article): View
     {
-        $article->loadMissing('currentStatus');
-
         Gate::authorize('update', $article);
 
         return view('articles.edit', [
@@ -78,17 +73,13 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function update(Request $request, Article $article): RedirectResponse
+    public function update(UpdateArticleRequest $request, Article $article): RedirectResponse
     {
-        $article->loadMissing('currentStatus');
-
-        Gate::authorize('update', $article);
-
-        $validated = $this->validateArticle($request, $article);
+        $validated = $request->validated();
 
         $article->update([
             'title' => $validated['title'],
-            'slug' => $this->uniqueSlug($validated['slug'] ?? $validated['title'], $article),
+            'slug' => $this->slugForTitle($validated['title']),
             'summary' => $validated['summary'] ?? null,
             'content' => $validated['content'],
         ]);
@@ -100,8 +91,6 @@ class ArticleController extends Controller
 
     public function submit(Article $article): RedirectResponse
     {
-        $article->loadMissing('currentStatus');
-
         Gate::authorize('submit', $article);
 
         $this->workflow->submit($article);
@@ -113,8 +102,6 @@ class ArticleController extends Controller
 
     public function withdraw(Article $article): RedirectResponse
     {
-        $article->loadMissing('currentStatus');
-
         Gate::authorize('withdraw', $article);
 
         $this->workflow->withdraw($article);
@@ -124,39 +111,8 @@ class ArticleController extends Controller
             ->with('status', 'Article withdrawn from review.');
     }
 
-    /**
-     * @return array{title: string, slug?: string|null, summary?: string|null, content: string}
-     */
-    private function validateArticle(Request $request, ?Article $article = null): array
+    private function slugForTitle(string $title): string
     {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'alpha_dash',
-                Rule::unique('articles', 'slug')->ignore($article),
-            ],
-            'summary' => ['nullable', 'string'],
-            'content' => ['required', 'string'],
-        ]);
-    }
-
-    private function uniqueSlug(string $value, ?Article $except = null): string
-    {
-        $base = Str::slug($value) ?: 'article';
-        $slug = $base;
-        $suffix = 2;
-
-        while (Article::query()
-            ->where('slug', $slug)
-            ->when($except, fn ($query) => $query->whereKeyNot($except->id))
-            ->exists()) {
-            $slug = $base.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
+        return Str::slug($title) ?: 'article';
     }
 }

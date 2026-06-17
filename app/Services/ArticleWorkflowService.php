@@ -6,26 +6,15 @@ use App\Enums\ArticleReviewActionType;
 use App\Enums\ArticleStatus as ArticleStatusEnum;
 use App\Models\Article;
 use App\Models\ArticleReviewAction;
-use App\Models\ArticleStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ArticleWorkflowService
 {
-    public function createDraftStatus(Article $article): ArticleStatus
+    public function submit(Article $article): Article
     {
-        return ArticleStatus::query()->create([
-            'article_id' => $article->id,
-            'status' => ArticleStatusEnum::Draft,
-        ]);
-    }
-
-    public function submit(Article $article): ArticleStatus
-    {
-        $status = $this->statusFor($article);
-
-        if (! in_array($status->status, [
+        if (! in_array($article->status, [
             ArticleStatusEnum::Draft,
             ArticleStatusEnum::Withdrawn,
             ArticleStatusEnum::Rejected,
@@ -35,7 +24,7 @@ class ArticleWorkflowService
             ]);
         }
 
-        $status->update([
+        $article->update([
             'status' => ArticleStatusEnum::PendingReview,
             'approved_by' => null,
             'approved_at' => null,
@@ -46,28 +35,26 @@ class ArticleWorkflowService
             'taken_down_at' => null,
         ]);
 
-        return $status;
+        return $article->refresh();
     }
 
-    public function withdraw(Article $article): ArticleStatus
+    public function withdraw(Article $article): Article
     {
-        $status = $this->statusFor($article);
-
-        if ($status->status !== ArticleStatusEnum::PendingReview) {
+        if ($article->status !== ArticleStatusEnum::PendingReview) {
             throw ValidationException::withMessages([
                 'article' => 'Only pending articles can be withdrawn.',
             ]);
         }
 
-        $status->update([
+        $article->update([
             'status' => ArticleStatusEnum::Withdrawn,
             'withdrawn_at' => now(),
         ]);
 
-        return $status;
+        return $article->refresh();
     }
 
-    public function approve(Article $article, User $admin): ArticleStatus
+    public function approve(Article $article, User $admin): Article
     {
         return $this->review(
             article: $article,
@@ -77,7 +64,7 @@ class ArticleWorkflowService
         );
     }
 
-    public function reject(Article $article, User $admin, string $reason): ArticleStatus
+    public function reject(Article $article, User $admin, string $reason): Article
     {
         return $this->review(
             article: $article,
@@ -88,7 +75,7 @@ class ArticleWorkflowService
         );
     }
 
-    public function takeDown(Article $article, User $admin, ?string $reason = null): ArticleStatus
+    public function takeDown(Article $article, User $admin, ?string $reason = null): Article
     {
         return $this->review(
             article: $article,
@@ -110,38 +97,31 @@ class ArticleWorkflowService
         ArticleStatusEnum $toStatus,
         ?string $reason = null,
         array $allowedFrom = [ArticleStatusEnum::PendingReview],
-    ): ArticleStatus {
-        return DB::transaction(function () use ($article, $admin, $actionType, $toStatus, $reason, $allowedFrom): ArticleStatus {
-            $status = ArticleStatus::query()
-                ->where('article_id', $article->id)
+    ): Article {
+        return DB::transaction(function () use ($article, $admin, $actionType, $toStatus, $reason, $allowedFrom): Article {
+            $article = Article::query()
+                ->whereKey($article->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (! in_array($status->status, $allowedFrom, true)) {
+            if (! in_array($article->status, $allowedFrom, true)) {
                 throw ValidationException::withMessages([
                     'article' => 'This article is not in a reviewable status.',
                 ]);
             }
 
-            $action = ArticleReviewAction::query()->create([
+            ArticleReviewAction::query()->create([
                 'article_id' => $article->id,
                 'admin_id' => $admin->id,
                 'action' => $actionType,
-                'from_status' => $status->status,
+                'from_status' => $article->status,
                 'to_status' => $toStatus,
                 'reason' => $reason,
-                'is_open' => true,
-                'open_slot' => 'open',
             ]);
 
-            $status->update($this->statusUpdatesFor($actionType, $toStatus, $admin, $reason));
+            $article->update($this->statusUpdatesFor($actionType, $toStatus, $admin, $reason));
 
-            $action->update([
-                'is_open' => false,
-                'open_slot' => null,
-            ]);
-
-            return $status->refresh();
+            return $article->refresh();
         });
     }
 
@@ -183,10 +163,5 @@ class ArticleWorkflowService
             'status' => $toStatus,
             'taken_down_at' => now(),
         ];
-    }
-
-    private function statusFor(Article $article): ArticleStatus
-    {
-        return $article->currentStatus()->firstOrFail();
     }
 }
