@@ -10,7 +10,6 @@ use App\Services\ArticleWorkflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
@@ -43,7 +42,6 @@ class ArticleController extends Controller
         $article = Article::query()->create([
             'author_id' => $request->user()->id,
             'title' => $validated['title'],
-            'slug' => $this->slugForTitle($validated['title']),
             'summary' => $validated['summary'] ?? null,
             'content' => $validated['content'],
         ]);
@@ -79,7 +77,6 @@ class ArticleController extends Controller
 
         $article->update([
             'title' => $validated['title'],
-            'slug' => $this->slugForTitle($validated['title']),
             'summary' => $validated['summary'] ?? null,
             'content' => $validated['content'],
         ]);
@@ -109,10 +106,5 @@ class ArticleController extends Controller
         return redirect()
             ->route('articles.show', $article)
             ->with('status', 'Article withdrawn from review.');
-    }
-
-    private function slugForTitle(string $title): string
-    {
-        return Str::slug($title) ?: 'article';
     }
 }

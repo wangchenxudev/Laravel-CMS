@@ -30,7 +30,8 @@ test('authenticated users can create draft articles tied to their user id', func
 
     expect($article->author_id)->toBe($user->id)
         ->and($article->slug)->toBe('reviewable-article')
-        ->and($article->status)->toBe(ArticleStatusEnum::Draft);
+        ->and($article->status)->toBe(ArticleStatusEnum::Draft)
+        ->and($article->getAttributes())->not->toHaveKey('slug');
 });
 
 test('guests can not create articles', function () {
@@ -194,7 +195,6 @@ test('published article pages redirect stale slugs to the canonical url', functi
     $article = Article::factory()->create([
         'author_id' => $user->id,
         'title' => 'Original Article',
-        'slug' => 'original-article',
     ]);
 
     $this->actingAs($user)->patch(route('articles.update', $article), articlePayload([
@@ -217,11 +217,9 @@ test('published article pages redirect stale slugs to the canonical url', functi
 test('articles can share a slug because public urls include the id', function () {
     $first = Article::factory()->create([
         'title' => 'Shared Title',
-        'slug' => 'shared-title',
     ]);
     $second = Article::factory()->create([
         'title' => 'Shared Title',
-        'slug' => 'shared-title',
     ]);
 
     expect($first->slug)->toBe($second->slug)
@@ -244,4 +242,29 @@ test('published article index orders articles by approval time', function () {
     $this->get(route('published.articles.index'))
         ->assertOk()
         ->assertSeeInOrder([$newer->title, $older->title]);
+});
+
+test('published article index searches published articles by title only', function () {
+    $matching = Article::factory()->create([
+        'title' => 'Laravel Release Checklist',
+        'status' => ArticleStatusEnum::Published,
+        'approved_at' => now(),
+    ]);
+    $summaryOnlyMatch = Article::factory()->create([
+        'title' => 'Editorial Guidelines',
+        'summary' => 'Laravel appears only in this summary.',
+        'content' => 'Laravel appears only in this content.',
+        'status' => ArticleStatusEnum::Published,
+        'approved_at' => now()->subMinute(),
+    ]);
+    $draftMatch = Article::factory()->create([
+        'title' => 'Laravel Draft Notes',
+        'status' => ArticleStatusEnum::Draft,
+    ]);
+
+    $this->get(route('published.articles.index', ['q' => 'Laravel']))
+        ->assertOk()
+        ->assertSee($matching->title)
+        ->assertDontSee($summaryOnlyMatch->title)
+        ->assertDontSee($draftMatch->title);
 });

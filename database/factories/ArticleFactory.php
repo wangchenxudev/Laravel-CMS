@@ -6,7 +6,6 @@ use App\Enums\ArticleStatus as ArticleStatusEnum;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Article>
@@ -25,7 +24,6 @@ class ArticleFactory extends Factory
         return [
             'author_id' => User::factory(),
             'title' => $title,
-            'slug' => Str::slug($title) ?: 'article',
             'summary' => fake()->paragraph(),
             'content' => fake()->paragraphs(3, true),
             'status' => ArticleStatusEnum::Draft,

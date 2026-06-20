@@ -33,7 +33,7 @@
         @endguest
         <a href="{{ route('published.articles.index') }}"
           class="rounded border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors">
-          Browse Articles →
+          Browse Articles ->
         </a>
       </div>
     </div>

@@ -25,6 +25,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <x-ui.label for="password">Password</x-ui.label>
+                        <a href="{{ route('password.request') }}" class="text-xs font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors underline">Forgot password?</a>
                     </div>
                     <x-ui.input id="password" name="password" type="password" required autocomplete="current-password" :invalid="$errors->has('password')" />
                     @error('password')

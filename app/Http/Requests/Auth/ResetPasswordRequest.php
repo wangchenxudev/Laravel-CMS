@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +20,9 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => ['required', 'string', 'lowercase', 'email'],
+            'code' => ['required', 'string', 'digits:6'],
+            'password' => ['required', 'confirmed', 'min:6'],
         ];
     }
 }

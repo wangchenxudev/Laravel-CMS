@@ -35,6 +35,32 @@ test('guests are redirected from dashboard to login', function () {
     $response->assertRedirect(route('login', absolute: false));
 });
 
+test('regular users are redirected to published articles after login', function () {
+    $user = User::factory()->create([
+        'role' => UserRole::User,
+    ]);
+
+    $response = $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('published.articles.index', absolute: false));
+});
+
+test('admin users are redirected to admin dashboard after login', function () {
+    $user = User::factory()->create([
+        'role' => UserRole::Admin,
+    ]);
+
+    $response = $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('admin.dashboard', absolute: false));
+});
+
 test('authenticated users can view dashboard with their role', function () {
     $user = User::factory()->create([
         'role' => UserRole::User,

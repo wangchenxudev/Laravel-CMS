@@ -1,89 +1,106 @@
-<x-app-layout title="Dashboard">
+<x-app-layout title="Workspace">
 @php
   $user = auth()->user();
 @endphp
 
   <div class="space-y-6">
-    <!-- Top Greeting Banner -->
-    <div class="overflow-hidden rounded border border-slate-200 bg-white p-6 shadow-sm">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Welcome back, {{ $user->name }}</h1>
-          <p class="mt-1 text-sm text-slate-500">
-            This is your personal workspace. You can manage drafts, write articles, and track submission states.
-          </p>
-        </div>
-
-        <div class="inline-flex items-center gap-2 rounded border border-slate-200 bg-slate-50 px-4 py-2 text-sm shadow-sm font-medium">
-          <span class="text-slate-500">Current role:</span>
-          <span class="font-semibold text-slate-900 bg-slate-200 px-2 py-0.5 rounded text-xs">{{ $user->role->value === 'admin' ? 'Admin' : 'User' }}</span>
-          <!-- Testing markers for legacy assertions -->
-          <span class="hidden">Current role {{ $user->role->value }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Stats & System Status Cards -->
-    <div class="grid gap-6 md:grid-cols-3">
-      <!-- Status Card 1 -->
-      <x-ui.card title="Account Status" subtitle="System Active Check">
-        <div class="flex items-center gap-3">
-          <span class="flex h-3 w-3 relative">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-          </span>
-          <span class="text-sm font-semibold text-slate-700">Account Active</span>
-        </div>
-        <p class="mt-3 text-xs leading-relaxed text-slate-500">
-          Your workspace is authorized and connected to the editorial review workflow. Any articles you publish will enter the queue.
-        </p>
-      </x-ui.card>
-
-      <!-- Status Card 2 -->
-      <x-ui.card title="Security & Audits" subtitle="Account Protection">
-        <div class="flex items-center gap-2 text-sm text-slate-700">
-          <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span class="font-semibold text-slate-800">Audit Logging Active</span>
-        </div>
-        <p class="mt-3 text-xs leading-relaxed text-slate-500">
-          All sensitive actions are recorded for administrative auditing. Password resets are planned.
-        </p>
-      </x-ui.card>
-
-      <!-- Status Card 3 -->
-      @if ($user->isAdmin())
-        <div class="overflow-hidden rounded border border-blue-200 bg-blue-50/50 p-5 flex flex-col justify-between shadow-sm">
+    <section class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-200 bg-slate-50/60 px-6 py-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <svg class="h-5 w-5 text-[#1890FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Admin Access
-            </h3>
-            <p class="mt-3 text-xs leading-relaxed text-slate-700">
-              You are logged in as an administrator. You can review submissions and manage articles.
+            <div class="inline-flex items-center gap-2 rounded border border-[#1890FF]/20 bg-[#1890FF]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#1890FF]">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#1890FF]"></span>
+              Author Workspace
+            </div>
+            <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900">Welcome back, {{ $user->name }}</h1>
+            <p class="mt-1 max-w-2xl text-sm leading-6 text-slate-500">
+              Manage your own submissions, continue drafts, and send finished articles into the editorial review queue.
             </p>
           </div>
-          <div class="mt-5">
-            <a href="{{ route('admin.dashboard') }}" 
-              class="inline-flex items-center justify-center rounded bg-[#1890FF] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#40a9ff] active:scale-95 transition-all">
-              Go to Admin Console
+
+          <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('published.articles.index') }}"
+              class="inline-flex items-center justify-center rounded border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900">
+              Browse Articles
+            </a>
+            <a href="{{ route('articles.create') }}"
+              class="inline-flex items-center justify-center rounded bg-[#1890FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#40a9ff] active:scale-95">
+              New Article
             </a>
           </div>
         </div>
-      @else
-        <x-ui.card title="Quick Actions" subtitle="Write Content">
-          <p class="text-xs leading-relaxed text-slate-500 mb-4">
-            Draft your ideas and insights, then submit them for administrator approval to publish.
-          </p>
-          <a href="{{ route('articles.create') }}" 
-            class="inline-flex items-center justify-center rounded bg-[#1890FF] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#40a9ff] active:scale-95 transition-all">
-            + New Article
+      </div>
+
+      <div class="grid divide-y divide-slate-100 md:grid-cols-3 md:divide-x md:divide-y-0">
+        <div class="px-6 py-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Role</p>
+          <p class="mt-2 text-sm font-semibold text-slate-900">{{ $user->role->value === 'admin' ? 'Admin' : 'User' }}</p>
+          <span class="hidden">Current role {{ $user->role->value }}</span>
+        </div>
+
+        <div class="px-6 py-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Publishing Flow</p>
+          <p class="mt-2 text-sm font-semibold text-slate-900">Draft -> Review -> Published</p>
+        </div>
+
+        <div class="px-6 py-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Account Status</p>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <span class="text-sm font-semibold text-slate-900">Active</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+      <section class="rounded border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 px-6 py-4">
+          <h2 class="text-base font-semibold text-slate-900">Editorial Tasks</h2>
+          <p class="mt-1 text-sm text-slate-500">Common content actions for registered authors.</p>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+          <a href="{{ route('articles.index') }}" class="flex items-center justify-between gap-4 px-6 py-4 transition hover:bg-slate-50">
+            <div>
+              <p class="text-sm font-semibold text-slate-900">My Articles</p>
+              <p class="mt-1 text-sm text-slate-500">Review drafts, rejected submissions, and published records you own.</p>
+            </div>
+            <svg class="h-5 w-5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
           </a>
-        </x-ui.card>
-      @endif
+
+          <a href="{{ route('articles.create') }}" class="flex items-center justify-between gap-4 px-6 py-4 transition hover:bg-slate-50">
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Create Draft</p>
+              <p class="mt-1 text-sm text-slate-500">Start a new article and submit it when it is ready for review.</p>
+            </div>
+            <svg class="h-5 w-5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </a>
+
+          <a href="{{ route('published.articles.index') }}" class="flex items-center justify-between gap-4 px-6 py-4 transition hover:bg-slate-50">
+            <div>
+              <p class="text-sm font-semibold text-slate-900">Public Content Library</p>
+              <p class="mt-1 text-sm text-slate-500">Browse approved articles and use title search to find published content.</p>
+            </div>
+            <svg class="h-5 w-5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <aside class="rounded border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-base font-semibold text-slate-900">Submission Rules</h2>
+        <div class="mt-4 space-y-4 text-sm leading-6 text-slate-600">
+          <p>Drafts remain private until you submit them for administrator review.</p>
+          <p>Rejected articles can be revised and submitted again from your article list.</p>
+          <p>Published articles are visible in the public content library after approval.</p>
+        </div>
+      </aside>
     </div>
   </div>
 </x-app-layout>

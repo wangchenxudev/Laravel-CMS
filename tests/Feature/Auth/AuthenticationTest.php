@@ -23,10 +23,10 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('home', absolute: false));
+    $response->assertRedirect(route('published.articles.index', absolute: false));
 });
 
-test('admin users are redirected to the home page after login', function () {
+test('admin users are redirected to the admin dashboard after login', function () {
     $user = User::factory()->create([
         'role' => UserRole::Admin,
     ]);
@@ -37,7 +37,7 @@ test('admin users are redirected to the home page after login', function () {
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('home', absolute: false));
+    $response->assertRedirect(route('admin.dashboard', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {

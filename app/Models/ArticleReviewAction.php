@@ -8,14 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'article_id',
-    'admin_id',
-    'action',
-    'from_status',
-    'to_status',
-    'reason',
-])]
+#[Fillable(['article_id', 'admin_id', 'action', 'from_status', 'to_status', 'reason'])]
 class ArticleReviewAction extends Model
 {
     /**

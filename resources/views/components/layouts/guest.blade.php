@@ -63,6 +63,22 @@
 
   <!-- Main Content -->
   <main class="flex-1">
+    @if (session('status'))
+      <div class="mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 flex items-start gap-3 shadow-sm" x-data="{ show: true }" x-show="show">
+          <svg class="h-5 w-5 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="flex-1 font-medium">{{ session('status') }}</div>
+          <button type="button" @click="show = false" class="text-emerald-500 hover:text-emerald-700 shrink-0 cursor-pointer">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    @endif
+
     {{ $slot }}
   </main>
 
