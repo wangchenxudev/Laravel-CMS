@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\ArticleReviewActionType;
-use App\Enums\ArticleStatus as ArticleStatusEnum;
-use App\Enums\UserRole;
+use App\Enums\Article\ArticleReviewActionType;
+use App\Enums\Article\ArticleStatus as ArticleStatusEnum;
+use App\Enums\User\UserRole;
 use App\Models\Article;
 use App\Models\ArticleReviewAction;
 use App\Models\User;

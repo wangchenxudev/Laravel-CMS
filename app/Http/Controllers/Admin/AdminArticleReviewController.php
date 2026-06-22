@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\ArticleStatus;
+use App\Enums\Article\ArticleStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ReviewRejectRequest;
-use App\Http\Requests\ReviewTakeDownRequest;
+use App\Http\Requests\Admin\ReviewRejectRequest;
+use App\Http\Requests\Admin\ReviewTakeDownRequest;
 use App\Models\Article;
+use App\Models\Tag;
 use App\Services\ArticleWorkflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,10 +35,11 @@ class AdminArticleReviewController extends Controller
     {
         Gate::authorize('view', $article);
 
-        $article->loadMissing('author', 'reviewActions.admin');
+        $article->loadMissing('author', 'reviewActions.admin', 'images', 'tags');
 
         return view('admin.articles.show', [
             'article' => $article,
+            'tags' => Tag::query()->orderBy('name')->get(),
         ]);
     }
 

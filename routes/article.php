@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
     Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::patch('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::patch('/articles/{article}/tags', [ArticleController::class, 'updateTags'])->name('articles.tags.update');
     Route::post('/articles/{article}/submit', [ArticleController::class, 'submit'])->name('articles.submit');
     Route::post('/articles/{article}/withdraw', [ArticleController::class, 'withdraw'])->name('articles.withdraw');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });

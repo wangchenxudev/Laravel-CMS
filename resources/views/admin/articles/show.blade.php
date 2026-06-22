@@ -6,7 +6,7 @@
   <div class="space-y-6 max-w-5xl">
     <!-- Back Link -->
     <div>
-      <a href="{{ route('admin.articles.reviews.index') }}" class="inline-flex items-center text-sm font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors">
+      <a href="{{ route('admin.articles.reviews.index') }}" class="inline-flex items-center text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors">
         ← Back to Review Queue
       </a>
     </div>
@@ -42,6 +42,10 @@
                 <p class="text-sm text-slate-600 leading-relaxed italic">{{ $article->summary }}</p>
               </div>
             @endif
+
+            <div class="mt-5">
+              @include('articles.partials.tag-editor')
+            </div>
           </div>
 
           @error('article')
@@ -60,6 +64,19 @@
               {{ $article->content }}
             </article>
           </div>
+
+          @if ($article->images->isNotEmpty())
+            <div class="mt-6">
+              <span class="text-xs font-bold text-slate-400 block mb-3 uppercase tracking-wider">Images</span>
+              <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                @foreach ($article->images as $image)
+                  <figure class="overflow-hidden rounded border border-slate-200 bg-slate-50">
+                    <img src="{{ $image->url }}" alt="{{ $image->original_name ?? $article->title }}" class="aspect-video w-full object-cover" loading="lazy" />
+                  </figure>
+                @endforeach
+              </div>
+            </div>
+          @endif
         </x-ui.card>
 
         <!-- Audit History -->
@@ -116,9 +133,9 @@
       <!-- Right: Decision Action Form Panels (Colspan 1) -->
       <div class="space-y-6">
         <!-- Review Help Box -->
-        <div class="rounded border border-blue-200 bg-blue-50/50 p-5 shadow-sm">
+        <div class="rounded border border-brand-200 bg-brand-50/50 p-5 shadow-sm">
           <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-            <svg class="h-5 w-5 text-[#1890FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg class="h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Review Guidance

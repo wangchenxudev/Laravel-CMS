@@ -6,7 +6,7 @@
   <div class="space-y-6 max-w-4xl">
     <!-- Back Link -->
     <div>
-      <a href="{{ route('articles.index') }}" class="inline-flex items-center text-sm font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors">
+      <a href="{{ route('articles.index') }}" class="inline-flex items-center text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors">
         ← Back to My Articles
       </a>
     </div>
@@ -21,22 +21,8 @@
           </h1>
           
           <div class="shrink-0">
-            @php
-              $statusColors = [
-                'draft' => 'bg-slate-100 text-slate-700 border-slate-200',
-                'pending_review' => 'bg-amber-50 text-amber-800 border-amber-200',
-                'published' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                'rejected' => 'bg-rose-50 text-rose-800 border-rose-200',
-              ];
-              $statusLabels = [
-                'draft' => 'Draft',
-                'pending_review' => 'Pending',
-                'published' => 'Published',
-                'rejected' => 'Rejected',
-              ];
-            @endphp
-            <span class="inline-flex items-center rounded border px-3 py-1 text-xs font-semibold {{ $statusColors[$status] ?? 'bg-slate-100 text-slate-700' }}">
-              {{ $statusLabels[$status] ?? $status }}
+            <span class="inline-flex items-center rounded border px-3 py-1 text-xs font-semibold {{ $article->status->badgeClasses() }}">
+              {{ $article->status->label() }}
             </span>
           </div>
         </div>
@@ -51,6 +37,10 @@
             <p class="text-sm text-slate-600 leading-relaxed italic">{{ $article->summary }}</p>
           </div>
         @endif
+
+        <div class="mt-5">
+          @include('articles.partials.tag-editor')
+        </div>
       </div>
 
       <!-- Errors or Info Boxes -->
@@ -84,6 +74,19 @@
           {{ $article->content }}
         </article>
       </div>
+
+      @if ($article->images->isNotEmpty())
+        <div class="mt-6 py-4 border-b border-slate-100">
+          <span class="text-xs font-bold text-slate-400 block mb-3 uppercase tracking-wider">Images</span>
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            @foreach ($article->images as $image)
+              <figure class="overflow-hidden rounded border border-slate-200 bg-slate-50">
+                <img src="{{ $image->url }}" alt="{{ $image->original_name ?? $article->title }}" class="aspect-video w-full object-cover" loading="lazy" />
+              </figure>
+            @endforeach
+          </div>
+        </div>
+      @endif
 
       <!-- Action Footer -->
       <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
@@ -123,6 +126,16 @@
               @csrf
               <x-ui.button type="submit" variant="secondary" class="text-rose-600 hover:text-rose-700 border-rose-200">
                 Withdraw Submission
+              </x-ui.button>
+            </form>
+          @endcan
+
+          @can('delete', $article)
+            <form method="POST" action="{{ route('articles.destroy', $article) }}" onsubmit="return confirm('Delete this article? This cannot be undone.');">
+              @csrf
+              @method('DELETE')
+              <x-ui.button type="submit" variant="secondary" class="text-rose-600 hover:text-rose-700 border-rose-200">
+                Delete
               </x-ui.button>
             </form>
           @endcan

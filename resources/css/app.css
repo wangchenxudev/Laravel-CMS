@@ -6,6 +6,16 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, ui-sans-serif,
+        system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-brand-50: #eff6fc;
+    --color-brand-100: #deecf9;
+    --color-brand-200: #c7e0f4;
+    --color-brand-300: #71afe5;
+    --color-brand-400: #2b88d8;
+    --color-brand-500: #0078d4;
+    --color-brand-600: #106ebe;
+    --color-brand-700: #005a9e;
+    --color-brand-800: #004578;
 }

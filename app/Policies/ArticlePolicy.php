@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\ArticleStatus;
+use App\Enums\Article\ArticleStatus;
 use App\Models\Article;
 use App\Models\User;
 
@@ -26,16 +26,24 @@ class ArticlePolicy
     public function update(User $user, Article $article): bool
     {
         return $this->ownsArticle($user, $article)
-            && in_array($article->status, [
-                ArticleStatus::Draft,
-                ArticleStatus::Withdrawn,
-                ArticleStatus::Rejected,
-            ], true);
+            && $article->status->isEditable();
     }
 
     public function submit(User $user, Article $article): bool
     {
         return $this->update($user, $article);
+    }
+
+    public function updateTags(User $user, Article $article): bool
+    {
+        return $user->isAdmin()
+            || ($this->ownsArticle($user, $article) && $article->status !== ArticleStatus::TakenDown);
+    }
+
+    public function delete(User $user, Article $article): bool
+    {
+        return $this->ownsArticle($user, $article)
+            && $article->status->isEditable();
     }
 
     public function withdraw(User $user, Article $article): bool

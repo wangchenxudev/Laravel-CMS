@@ -8,7 +8,7 @@
     
     $stateStyles = $invalid
         ? 'border-rose-300 text-rose-900 placeholder:text-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-        : 'border-slate-300 bg-white hover:border-slate-400 focus:border-[#1890FF] focus:ring-2 focus:ring-[#1890FF]/20';
+        : 'border-slate-300 bg-white hover:border-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20';
         
     $classes = $baseStyles . ' ' . $stateStyles;
 @endphp

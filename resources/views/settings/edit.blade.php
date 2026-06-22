@@ -12,8 +12,8 @@
     <div class="grid grid-cols-[176px_minmax(0,1fr)] gap-4 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-6">
       <aside class="sticky top-24 self-start">
         <nav class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm" aria-label="Account settings sections">
-          <a href="#account-information" class="flex items-center gap-3 border-l-4 border-[#1890FF] bg-[#1890FF]/5 px-4 py-3 text-sm font-semibold text-slate-900">
-            <svg class="h-5 w-5 shrink-0 text-[#1890FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <a href="#account-information" class="flex items-center gap-3 border-l-4 border-brand-500 bg-brand-500/5 px-4 py-3 text-sm font-semibold text-slate-900">
+            <svg class="h-5 w-5 shrink-0 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0" />
             </svg>
             Account Information
@@ -39,7 +39,7 @@
 
               <div>
                 <x-ui.label for="role">Access Role</x-ui.label>
-                <x-ui.input id="role" type="text" value="{{ $user->role->value === 'admin' ? 'Administrator' : 'Editor' }}" readonly class="bg-slate-50 cursor-not-allowed border-slate-200 text-slate-500 font-semibold text-[#1890FF]" />
+                <x-ui.input id="role" type="text" value="{{ $user->role->value === 'admin' ? 'Administrator' : 'Editor' }}" readonly class="bg-slate-50 cursor-not-allowed border-slate-200 text-slate-500 font-semibold text-brand-500" />
               </div>
 
               <div class="md:col-span-2">
@@ -81,7 +81,7 @@
               </div>
 
               <div class="border-t border-slate-100 pt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <a href="{{ route('password.request') }}" class="text-sm font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors underline">Recover with email code</a>
+                <a href="{{ route('password.request') }}" class="text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors underline">Recover with email code</a>
                 <x-ui.button type="submit" variant="primary">Update Password</x-ui.button>
               </div>
             </form>

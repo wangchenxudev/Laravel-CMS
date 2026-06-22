@@ -1,7 +1,7 @@
 <x-app-layout title="Edit Article">
   <div class="max-w-3xl">
     <x-ui.card title="Edit Article Content" subtitle="Update your article content. If previously rejected, edit and save to resubmit.">
-      <form method="POST" action="{{ route('articles.update', $article) }}" class="space-y-6">
+      <form method="POST" action="{{ route('articles.update', $article) }}" class="space-y-6" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
 

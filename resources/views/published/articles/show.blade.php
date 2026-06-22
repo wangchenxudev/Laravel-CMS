@@ -1,6 +1,6 @@
 <x-app-layout title="{{ $article->title }}">
   <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-    <a href="{{ route('published.articles.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#1890FF] transition hover:text-[#40a9ff]">
+    <a href="{{ route('published.articles.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-500 transition hover:text-brand-600">
       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
       </svg>
@@ -33,8 +33,16 @@
           </div>
         </div>
 
+        @if ($article->tags->isNotEmpty())
+          <div class="mt-4 flex flex-wrap gap-2">
+            @foreach ($article->tags as $tag)
+              <x-ui.tag-badge :href="route('published.articles.index', ['tag' => $tag->slug])">{{ $tag->name }}</x-ui.tag-badge>
+            @endforeach
+          </div>
+        @endif
+
         @if ($article->summary)
-          <div class="mt-6 border-l-4 border-[#1890FF] bg-slate-50 px-4 py-3">
+          <div class="mt-6 border-l-4 border-brand-500 bg-slate-50 px-4 py-3">
             <p class="text-sm font-semibold text-slate-700">Summary</p>
             <p class="mt-1 text-sm leading-6 text-slate-600">{{ $article->summary }}</p>
           </div>
@@ -45,7 +53,28 @@
         <div class="prose max-w-none whitespace-pre-line text-base leading-8 text-slate-800">
           {{ $article->content }}
         </div>
+
+        @if ($article->images->isNotEmpty())
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            @foreach ($article->images as $image)
+              <figure class="overflow-hidden rounded border border-slate-200 bg-slate-50">
+                <img src="{{ $image->url }}" alt="{{ $image->original_name ?? $article->title }}" class="w-full object-cover" loading="lazy" />
+              </figure>
+            @endforeach
+          </div>
+        @endif
       </div>
     </article>
+
+    @if (isset($moreArticles) && $moreArticles->isNotEmpty())
+      <section class="mt-12">
+        <h2 class="text-lg font-bold tracking-tight text-slate-900">More Articles</h2>
+        <div class="mt-5 grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          @foreach ($moreArticles as $more)
+            <x-ui.article-card :article="$more" />
+          @endforeach
+        </div>
+      </section>
+    @endif
   </div>
 </x-app-layout>

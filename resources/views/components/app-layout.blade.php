@@ -1,21 +1,19 @@
 @props(['title' => null, 'layout' => null])
 
 @php
-    $isGuestRoute = in_array(request()->route()?->getName(), [
-        'home',
-        'login',
-        'register',
-        'published.articles.index',
-        'published.articles.show'
-    ]) || !auth()->check();
+    $publicLayoutRoutes = ['home', 'login', 'register', 'register.verify', 'password.request', 'password.reset'];
+    $routeName = request()->route()?->getName();
+    $useGuest = ! auth()->check() || in_array($routeName, $publicLayoutRoutes, true);
 
-    $layoutType = $layout ?? ($isGuestRoute ? 'guest' : 'app');
+    $layoutType = $layout ?? ($useGuest ? 'guest' : 'app');
 @endphp
 
-@if($layoutType === 'guest')
+@if ($layoutType === 'guest')
     <x-layouts.guest :title="$title">
         {{ $slot }}
     </x-layouts.guest>
 @else
-    @include('layouts.app', ['title' => $title])
+    <x-layouts.app :title="$title">
+        {{ $slot }}
+    </x-layouts.app>
 @endif

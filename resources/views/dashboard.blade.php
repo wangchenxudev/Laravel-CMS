@@ -8,8 +8,8 @@
       <div class="border-b border-slate-200 bg-slate-50/60 px-6 py-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div class="inline-flex items-center gap-2 rounded border border-[#1890FF]/20 bg-[#1890FF]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#1890FF]">
-              <span class="h-1.5 w-1.5 rounded-full bg-[#1890FF]"></span>
+            <div class="inline-flex items-center gap-2 rounded border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-500">
+              <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
               Author Workspace
             </div>
             <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900">Welcome back, {{ $user->name }}</h1>
@@ -24,7 +24,7 @@
               Browse Articles
             </a>
             <a href="{{ route('articles.create') }}"
-              class="inline-flex items-center justify-center rounded bg-[#1890FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#40a9ff] active:scale-95">
+              class="inline-flex items-center justify-center rounded bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-600 active:scale-95">
               New Article
             </a>
           </div>

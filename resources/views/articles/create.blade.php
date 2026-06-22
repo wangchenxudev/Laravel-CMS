@@ -1,7 +1,7 @@
 <x-app-layout title="Create Article">
   <div class="max-w-3xl">
     <x-ui.card title="Create New Article" subtitle="Create a new draft. Submit for review once finished.">
-      <form method="POST" action="{{ route('articles.store') }}" class="space-y-6">
+      <form method="POST" action="{{ route('articles.store') }}" class="space-y-6" enctype="multipart/form-data">
         @csrf
 
         @include('articles.partials.form')

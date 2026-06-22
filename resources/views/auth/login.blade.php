@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-md px-4 sm:px-6 py-12 md:py-20">
         <x-ui.card>
             <div class="border-b border-slate-100 pb-5 mb-6 text-center">
-                <span class="inline-flex items-center justify-center rounded-full bg-[#1890FF]/10 p-2 mb-3 text-[#1890FF]">
+                <span class="inline-flex items-center justify-center rounded-full bg-brand-500/10 p-2 mb-3 text-brand-500">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -25,7 +25,7 @@
                 <div>
                     <div class="flex items-center justify-between">
                         <x-ui.label for="password">Password</x-ui.label>
-                        <a href="{{ route('password.request') }}" class="text-xs font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors underline">Forgot password?</a>
+                        <a href="{{ route('password.request') }}" class="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors underline">Forgot password?</a>
                     </div>
                     <x-ui.input id="password" name="password" type="password" required autocomplete="current-password" :invalid="$errors->has('password')" />
                     @error('password')
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="flex items-center">
-                    <input id="remember" name="remember" type="checkbox" value="1" class="h-4 w-4 rounded border-slate-300 text-[#1890FF] focus:ring-[#1890FF] transition-colors">
+                    <input id="remember" name="remember" type="checkbox" value="1" class="h-4 w-4 rounded border-slate-300 text-brand-500 focus:ring-brand-500 transition-colors">
                     <label for="remember" class="ml-2 block text-sm font-medium text-slate-600">Remember me</label>
                 </div>
 
@@ -45,7 +45,7 @@
 
             <div class="mt-6 text-center text-sm border-t border-slate-100 pt-5">
                 <span class="text-slate-500">Need an account?</span>
-                <a href="{{ route('register') }}" class="font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors underline">Register here</a>
+                <a href="{{ route('register') }}" class="font-semibold text-brand-500 hover:text-brand-600 transition-colors underline">Register here</a>
             </div>
         </x-ui.card>
     </div>

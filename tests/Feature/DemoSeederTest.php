@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\ArticleStatus;
+use App\Enums\Article\ArticleStatus;
 use App\Models\Article;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;

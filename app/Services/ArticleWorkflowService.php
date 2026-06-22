@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Enums\ArticleReviewActionType;
-use App\Enums\ArticleStatus as ArticleStatusEnum;
+use App\Enums\Article\ArticleReviewActionType;
+use App\Enums\Article\ArticleStatus as ArticleStatusEnum;
 use App\Models\Article;
 use App\Models\ArticleReviewAction;
 use App\Models\User;
@@ -14,11 +14,7 @@ class ArticleWorkflowService
 {
     public function submit(Article $article): Article
     {
-        if (! in_array($article->status, [
-            ArticleStatusEnum::Draft,
-            ArticleStatusEnum::Withdrawn,
-            ArticleStatusEnum::Rejected,
-        ], true)) {
+        if (! $article->status->isEditable()) {
             throw ValidationException::withMessages([
                 'article' => 'Only draft, withdrawn, or rejected articles can be submitted.',
             ]);

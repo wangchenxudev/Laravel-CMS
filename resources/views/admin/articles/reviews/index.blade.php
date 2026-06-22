@@ -20,7 +20,7 @@
               </svg>
             </span>
             <input type="text" placeholder="Filter by title..." 
-              class="block w-full pl-9 pr-3 py-1.5 text-sm rounded border border-slate-300 bg-white placeholder:text-slate-400 focus:border-[#1890FF] focus:ring-2 focus:ring-[#1890FF]/20 focus:outline-none transition-all" />
+              class="block w-full pl-9 pr-3 py-1.5 text-sm rounded border border-slate-300 bg-white placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all" />
           </div>
 
           <!-- Quick Stats Tag -->
@@ -46,7 +46,7 @@
           <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
             <tr>
               <th scope="col" class="w-12 px-6 py-3">
-                <input type="checkbox" disabled class="rounded border-slate-300 text-[#1890FF] focus:ring-[#1890FF] cursor-not-allowed" />
+                <input type="checkbox" disabled class="rounded border-slate-300 text-brand-500 focus:ring-brand-500 cursor-not-allowed" />
               </th>
               <th scope="col" class="px-6 py-3">Title</th>
               <th scope="col" class="px-6 py-3">Author</th>
@@ -60,12 +60,12 @@
               <tr class="hover:bg-slate-50/50 transition-colors">
                 <!-- Checkbox -->
                 <td class="px-6 py-4">
-                  <input type="checkbox" disabled class="rounded border-slate-300 text-[#1890FF] focus:ring-[#1890FF] cursor-not-allowed" />
+                  <input type="checkbox" disabled class="rounded border-slate-300 text-brand-500 focus:ring-brand-500 cursor-not-allowed" />
                 </td>
 
                 <!-- Title -->
                 <td class="px-6 py-4 font-semibold text-slate-900 max-w-sm truncate">
-                  <a href="{{ route('admin.articles.show', $article) }}" class="hover:text-[#1890FF] transition-colors">
+                  <a href="{{ route('admin.articles.show', $article) }}" class="hover:text-brand-500 transition-colors">
                     {{ $article->title }}
                   </a>
                 </td>
@@ -90,7 +90,7 @@
                 <!-- Action Button -->
                 <td class="px-6 py-4 text-right whitespace-nowrap text-xs font-medium">
                   <a href="{{ route('admin.articles.show', $article) }}" 
-                    class="rounded bg-[#1890FF] px-3 py-1.5 text-white shadow-sm hover:bg-[#40a9ff] active:scale-95 transition-all">
+                    class="rounded bg-brand-500 px-3 py-1.5 text-white shadow-sm hover:bg-brand-600 active:scale-95 transition-all">
                     Review Submission
                   </a>
                 </td>

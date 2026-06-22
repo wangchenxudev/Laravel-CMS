@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\UserRole;
+use App\Enums\User\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\ArticleReviewActionType;
-use App\Enums\ArticleStatus;
+use App\Enums\Article\ArticleReviewActionType;
+use App\Enums\Article\ArticleStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

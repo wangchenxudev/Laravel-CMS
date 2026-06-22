@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-md px-4 sm:px-6 py-12 md:py-20">
         <x-ui.card>
             <div class="border-b border-slate-100 pb-5 mb-6 text-center">
-                <span class="inline-flex items-center justify-center rounded-full bg-[#1890FF]/10 p-2 mb-3 text-[#1890FF]">
+                <span class="inline-flex items-center justify-center rounded-full bg-brand-500/10 p-2 mb-3 text-brand-500">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V8a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z" />
                     </svg>
@@ -37,7 +37,7 @@
             </form>
 
             <div class="mt-6 text-center text-sm border-t border-slate-100 pt-5">
-                <a href="{{ route('register') }}" class="font-semibold text-[#1890FF] hover:text-[#40a9ff] transition-colors underline">Use a different email</a>
+                <a href="{{ route('register') }}" class="font-semibold text-brand-500 hover:text-brand-600 transition-colors underline">Use a different email</a>
             </div>
         </x-ui.card>
     </div>

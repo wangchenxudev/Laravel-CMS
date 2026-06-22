@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreArticleRequest;
-use App\Http\Requests\UpdateArticleRequest;
+use App\Http\Requests\Cms\StoreArticleRequest;
+use App\Http\Requests\Cms\UpdateArticleRequest;
+use App\Http\Requests\Cms\UpdateArticleTagsRequest;
 use App\Models\Article;
+use App\Models\Tag;
+use App\Services\ArticleImageService;
 use App\Services\ArticleWorkflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +17,10 @@ use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
-    public function __construct(public ArticleWorkflowService $workflow) {}
+    public function __construct(
+        public ArticleWorkflowService $workflow,
+        public ArticleImageService $images,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -32,7 +38,9 @@ class ArticleController extends Controller
     {
         Gate::authorize('create', Article::class);
 
-        return view('articles.create');
+        return view('articles.create', [
+            'tags' => Tag::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(StoreArticleRequest $request): RedirectResponse
@@ -46,6 +54,10 @@ class ArticleController extends Controller
             'content' => $validated['content'],
         ]);
 
+        $article->tags()->sync($validated['tags'] ?? []);
+
+        $this->images->store($article, $request->file('images', []));
+
         return redirect()
             ->route('articles.show', $article)
             ->with('status', 'Article created as a draft.');
@@ -55,10 +67,11 @@ class ArticleController extends Controller
     {
         Gate::authorize('view', $article);
 
-        $article->loadMissing('author');
+        $article->loadMissing('author', 'images', 'tags');
 
         return view('articles.show', [
             'article' => $article,
+            'tags' => Tag::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -66,8 +79,11 @@ class ArticleController extends Controller
     {
         Gate::authorize('update', $article);
 
+        $article->loadMissing('images', 'tags');
+
         return view('articles.edit', [
             'article' => $article,
+            'tags' => Tag::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -81,9 +97,26 @@ class ArticleController extends Controller
             'content' => $validated['content'],
         ]);
 
+        $article->tags()->sync($validated['tags'] ?? []);
+
+        $this->images->sync(
+            $article,
+            $request->file('images', []),
+            array_map('intval', $validated['remove_images'] ?? []),
+        );
+
         return redirect()
             ->route('articles.show', $article)
             ->with('status', 'Article updated.');
+    }
+
+    public function updateTags(UpdateArticleTagsRequest $request, Article $article): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $article->tags()->sync($validated['tags'] ?? []);
+
+        return back()->with('status', 'Tags updated.');
     }
 
     public function submit(Article $article): RedirectResponse
@@ -106,5 +139,16 @@ class ArticleController extends Controller
         return redirect()
             ->route('articles.show', $article)
             ->with('status', 'Article withdrawn from review.');
+    }
+
+    public function destroy(Article $article): RedirectResponse
+    {
+        Gate::authorize('delete', $article);
+
+        $article->delete();
+
+        return redirect()
+            ->route('articles.index')
+            ->with('status', 'Article deleted.');
     }
 }

@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Enums\ArticleStatus;
-use App\Enums\UserRole;
+use App\Enums\Article\ArticleStatus;
+use App\Enums\User\UserRole;
 use App\Models\Article;
+use App\Models\ArticleImage;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -23,6 +25,8 @@ class ArticleSeeder extends Seeder
             ->where('role', UserRole::User)
             ->orderBy('id')
             ->get();
+
+        $tagIds = Tag::query()->pluck('id');
 
         for ($number = 1; $number <= 20; $number++) {
             $author = $authors[($number - 1) % $authors->count()];
@@ -44,9 +48,21 @@ class ArticleSeeder extends Seeder
                 'taken_down_at' => $status === ArticleStatus::TakenDown ? now()->subDays($number) : null,
             ]);
 
-            Article::query()->updateOrCreate([
+            $persisted = Article::query()->updateOrCreate([
                 'title' => $article->title,
             ], $article->getAttributes());
+
+            if ($tagIds->isNotEmpty()) {
+                $persisted->tags()->sync(
+                    $tagIds->shuffle()->take(($number % 4))->all(),
+                );
+            }
+
+            if ($status === ArticleStatus::Published && extension_loaded('gd') && $persisted->images()->doesntExist()) {
+                ArticleImage::factory()->for($persisted)->create([
+                    'position' => 1,
+                ]);
+            }
         }
     }
 

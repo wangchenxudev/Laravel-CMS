@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\ArticleStatus as ArticleStatusEnum;
+use App\Enums\Article\ArticleStatus as ArticleStatusEnum;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

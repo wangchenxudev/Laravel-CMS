@@ -19,11 +19,8 @@ return new class extends Migration
             $table->string('from_status');
             $table->string('to_status');
             $table->text('reason')->nullable();
-            $table->boolean('is_open')->default(false);
-            $table->string('open_slot')->nullable();
             $table->timestamps();
 
-            $table->unique(['article_id', 'open_slot']);
             $table->index(['article_id', 'created_at']);
             $table->index('admin_id');
         });

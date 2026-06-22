@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\ArticleStatus;
+use App\Enums\Article\ArticleStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('author_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
-            $table->string('slug')->index();
             $table->text('summary')->nullable();
             $table->longText('content');
             $table->string('status')->default(ArticleStatus::Draft->value)->index();
@@ -27,9 +26,11 @@ return new class extends Migration
             $table->text('reject_reason')->nullable();
             $table->timestamp('withdrawn_at')->nullable();
             $table->timestamp('taken_down_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->index('author_id');
+            $table->index(['status', 'approved_at']);
         });
     }
 
